@@ -1,6 +1,6 @@
 export const generateId = (collection) => {
     if (!Array.isArray(collection)){
-        throw new Error("COLECTION NOT FOUND");
+        throw new Error("COLLECTION NOT FOUND");
     }
 
     let maxId = 0;

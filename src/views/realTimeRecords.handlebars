@@ -4,43 +4,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 </head>
 <header>
-    <h1>Records <br> In Real Time</h1>    
+    <h1>Real-Time Records</h1>
 </header>
 
 <main>
-    <div class="main-container">
-    <div class="list-containers">
-        <section class="container">
-            <h3>Records</h3>
-            <div>
-                <ul id="records-list"></ul>
-            </div>        
-        </section>
-    </div>
-    <div class="forms-containers">
-        <section class="container">
-            <h3>Add Record</h3>
-            <form id="records-form">
-                <input type="text" name="title" placeholder="Record name...">
-                <div>Record active? <input type="checkbox" name="status"></div>
-                <input type="number" name="stock" placeholder="Stock...">
+    <section class="container">        
+        <h3>Add a New Record</h3>
+        <form id="records-form">
+            <input type="text" name="title" placeholder="Title" required />
+            <input type="text" name="artist" placeholder="Artist" required />
+            <input type="number" name="year" placeholder="Year" required />
+            <input type="text" name="genre" placeholder="Genre" required />
+            <input type="text" name="condition" placeholder="Condition" required />
+            <input type="number" step="0.01" name="price" placeholder="Price" required />
+            <input type="number" name="stock" placeholder="Stock" required />
+            <button type="submit">Add Record</button>
+        </form>
+        <p id="error-message" style="color: red;"></p>
+    </section>
 
-                <input class="stock-btn" type="submit" value="save" placeholder="Add..">
-
-            </form>
-        </section>
-    
-        <section class="container">
-            <h3>Remove Record</h3>
-            <div>
-                <input type="number" id="input-record-id" placeholder="Insert Record Id...">
-                <button id="btn-delete-record">Delete</button>
-            </div>
-        </section>
-        <p id="error-message" style="color: tomato;"></p>
-        </div>
-    </div>
+    <section class="container">        
+        <h3>Records List</h3>
+        <ul id="records-list"></ul>
+    </section>
 </main>
 
+<!-- Importar el script de JavaScript -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="/api/public/js/records.socket.js"></script>

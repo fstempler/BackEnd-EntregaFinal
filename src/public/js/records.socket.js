@@ -1,66 +1,89 @@
 // Establece la conexión con el servidor usando Socket.IO
 const socket = io();
-// Obtiene el elemento del DOM que renderiza la lista de records
+// Obtiene elementos del DOM
 const recordsList = document.getElementById("records-list");
 const recordsForm = document.getElementById("records-form");
 const errorMessage = document.getElementById("error-message");
 const btnDelete = document.getElementById("btn-delete-record");
 const recordId = document.getElementById("input-record-id");
 
-
-
-// Evento que se activa al conectar con el servidor
+// Evento al conectar con el servidor
 socket.on("connect", () => {
-    // Indica que la conexión fue exitosa
     console.log("Connected to Server");
 });
 
-// Evento que se activa al desconectarse del servidor
+// Evento al desconectar del servidor
 socket.on("disconnect", () => {
-    // Indica que se perdió la conexión
-    console.log("Disconnect from Server");
-}); 
-
-socket.on("records-list", (data) => {
-    const records = data.records || [];
-
-    recordsList.innerText = "";
-
-    records.forEach((record) => {
-        recordsList.innerHTML += `<li>Id: ${record.id} - Name: ${record.title}</li>`;
-    });
-
+    console.log("Disconnected from Server");
 });
 
+// Renderizar lista de registros
+const renderRecordsList = (records) => {
+    recordsList.innerHTML = ""; // Limpiar la lista actual
+    records.forEach((record) => {
+        recordsList.innerHTML += `
+            <li data-id="${record._id}">
+                <strong>Id:</strong> ${record._id}<br>
+                <strong>Title:</strong> ${record.title}<br>
+                <strong>Artist:</strong> ${record.artist}<br>
+                <strong>Year:</strong> ${record.year}<br>
+                <strong>Genre:</strong> ${record.genre}<br>
+                <strong>Condition:</strong> ${record.condition}<br>
+                <strong>Price:</strong> $${record.price}<br>
+                <strong>Stock:</strong> ${record.stock}<br>
+                <button data-id="${record._id}">Delete</button>
+            </li>            
+        `;
+    });
+};
+
+// Solicitar lista inicial de registros
+socket.emit("get-records");
+
+// Recibir y renderizar lista de registros
+socket.on("records-list", (data) => {
+    const records = data.records || [];
+    renderRecordsList(records);
+});
+
+// Manejar envío del formulario
 recordsForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
-    console.log("PRESSED BTN");
 
     errorMessage.innerText = "";
     form.reset();
 
     socket.emit("insert-record", {
         title: formData.get("title"),
-        status: formData.get("status") || "off",
-        stock: formData.get("stock"),
+        artist: formData.get("artist"),
+        year: formData.get("year"),
+        genre: formData.get("genre"),
+        condition: formData.get("condition"),
+        price: parseFloat(formData.get("price")),
+        stock: parseInt(formData.get("stock"), 10),
     });
 });
 
-btnDelete.addEventListener("click", () => {
-    const id = recordId.value;
-    recordId.innerText = "";    
-    errorMessage.innerText = "";
-
-    if (id > 0){
+// Manejar eliminación de registros
+recordsList.addEventListener("click", (event) => {
+    if (event.target.tagName === "BUTTON" && event.target.dataset.id) {
+        const id = event.target.dataset.id;
+        console.log(`Deleting record with id: ${id}`);
         socket.emit("delete-record", { id });
     }
+});
 
-})
+// Recibir notificación de eliminación
+socket.on("recordDeleted", (id) => {
+    const recordElement = document.querySelector(`[data-id="${id}"]`);
+    if (recordElement) {
+        recordElement.remove();
+    }
+});
 
+// Mostrar mensajes de error
 socket.on("error-message", (data) => {
     errorMessage.innerText = data.message;
 });
-
-

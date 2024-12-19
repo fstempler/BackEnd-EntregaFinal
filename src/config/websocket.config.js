@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
-import RecordManager from "../managers/RecordManager.js"
+import ProductManager from "../managers/ProductManager.js"
 
-const recordManager = new RecordManager();
+const recordManager = new ProductManager();
 
 // Configura el servidor Socket.IO
 export const config = (httpServer) => {
